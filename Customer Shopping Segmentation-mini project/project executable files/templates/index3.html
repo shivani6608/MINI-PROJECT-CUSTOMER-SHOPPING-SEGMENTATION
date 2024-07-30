@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Shopping Segmentation Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            background-image: url("../static/Screenshot.png");
+            background-repeat: no-repeat;
+            background-size: cover; 
+        }
+
+        .container {
+            max-width: 600px;
+            margin:20px auto;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="number"],
+        input[type="text"],
+        select,
+        button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #prediction-result {
+            margin-top: 20px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .logo {
+            display: block;
+            margin: 20px auto;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="../static/Screenshot2.png" alt="Customer Segmentation" class="logo">
+        <h1>Customer Shopping Segmentation</h1>
+        <form id="prediction-form">
+            <div class="form-group">
+                <label for="gender">Gender:</label>
+                <select id="gender" name="gender" required>
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" required>
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" required>
+            </div>
+            <div class="form-group">
+                <label for="price">Price:</label>
+                <input type="number" id="price" name="price" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="payment_method">Payment Method:</label>
+                <select id="payment_method" name="payment_method" required>
+                    <option value="">Select</option>
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="Debit Card">Debit Card</option>
+                    <option value="Cash">Cash</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="shopping_mall">Shopping Mall:</label>
+                <select id="shopping_mall" name="shopping_mall" required>
+                    <option value="">Select</option>
+                    <option value="Kanyon">Kanyon</option>
+                    <option value="Forum Istanbul">Forum Istanbul</option>
+                    <option value="Metrocity">Metrocity</option>
+                    <option value="Metropol AVM">Metropol AVM</option>
+                    <option value="Istinye Park">Istinye Park</option>
+                    <option value="Mall of Istanbul">Mall of Istanbul</option>
+                    <option value="Emaar Square Mall">Emaar Square Mall</option>
+                    <option value="Cevahir AVM">Cevahir AVM</option>
+                    <option value="Viaport Outlet">Viaport Outlet</option>
+                    <option value="Zorlu Center">Zorlu Center</option>
+                </select>
+            </div>
+            <button type="button" onclick="submitForm()">Predict</button>
+        </form>
+        <p id="prediction-result"></p>
+    </div>
+    <script>
+        async function submitForm() {
+            const form = document.getElementById('prediction-form');
+            const formData = new FormData(form);
+            const jsonData = {};
+
+            formData.forEach((value, key) => {
+                jsonData[key] = value;
+            });
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(jsonData)
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    document.getElementById('prediction-result').textContent = `Predicted Cluster: ${result.predicted_cluster}`;
+                } else {
+                    document.getElementById('prediction-result').textContent = `Error: ${result.error}`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('prediction-result').textContent = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
+
+
